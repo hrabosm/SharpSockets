@@ -65,7 +65,7 @@ namespace SharpSockets
             this.dataTs = System.Text.Encoding.ASCII.GetBytes(stringData);
             this.sharpSocket.Send(this.dataTs);
         }
-        public void Listen()
+        private void Listen()
         {
             if(this.sharpSocket.Connected)
             {
@@ -124,7 +124,7 @@ namespace SharpSockets
             this.sharpSocket.Listen(backlog);
             this.receiveT.Start();
         }
-        public void Listen()
+        private void Listen()
         {
             this.sharpSocket = this.sharpSocket.Accept();
             if(this.sharpSocket.Connected)
