@@ -36,9 +36,28 @@ namespace SharpSockets
         }
         private void Connect()
         {
+            int i = 1;
             //Console.WriteLine("SS:Connecting! IP: "+ this.endIP.Address.ToString() + " and: "+ this.endIP.Port.ToString());
-            this.sharpSocket.Connect(this.endIP);
-            this.receiveT.Start();
+            start:
+            try
+            {
+                this.sharpSocket.Connect(this.endIP);
+                this.receiveT.Start();
+            }
+            catch (Exception)
+            {
+                if( i <= 5 )
+                {
+                    Console.WriteLine("Connecting");
+                    System.Threading.Thread.Sleep(1000);
+                    i++;
+                    goto start;
+                }
+                else
+                {
+                    Console.WriteLine("Connection failed!");
+                }
+            }
         }
         public void Send(string stringData)
         {
