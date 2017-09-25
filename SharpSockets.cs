@@ -38,27 +38,8 @@ namespace SharpSockets
         }
         private void Connect()
         {
-            int i = 1;
-            start:
-            try
-            {
-                this.sharpSocket.Connect(this.endIP);
-                this.receiveT.Start();
-            }
-            catch (Exception)
-            {
-                if( i <= 5 )
-                {
-                    Console.WriteLine("Connecting");
-                    System.Threading.Thread.Sleep(1000);
-                    i++;
-                    goto start;
-                }
-                else
-                {
-                    Console.WriteLine("Connection failed!");
-                }
-            }
+            this.sharpSocket.Connect(this.endIP);
+            this.receiveT.Start();
         }
         public void Send(string stringData)
         {
@@ -68,28 +49,41 @@ namespace SharpSockets
         }
         private void Listen()
         {
-            if(this.sharpSocket.Connected)
+            while((true))
             {
-                while((true))
+                if(this.sharpSocket.Connected)
                 {
-                    this.dataS = null;
-                    int bytesRecC = this.sharpSocket.Receive(this.data);
-                    if(bytesRecC>0)
+                    try
                     {
-                        this.dataS = Encoding.ASCII.GetString(this.data,0, bytesRecC);
-                        OnReceived(EventArgs.Empty);
+                        this.dataS = null;
+                        int bytesRecC = this.sharpSocket.Receive(this.data);
+                        if(bytesRecC>0)
+                        {
+                            this.dataS = Encoding.ASCII.GetString(this.data,0, bytesRecC);
+                            OnReceived(EventArgs.Empty);
+                        }
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Server ukončil spojení!");
+                        break;
                     }
                 }
             }
-            else
-            {
-                Console.WriteLine("Wut");
-            }   
         }
         protected virtual void OnReceived(EventArgs e)
         {
             if(OnDataReceived != null)
                 OnDataReceived(this, e);
+        }
+        public void Stop()
+        {
+            if(this.receiveT.IsAlive)
+            {
+                this.receiveT.Interrupt();
+            }
+            this.sharpSocket.Shutdown(SocketShutdown.Receive);
+            this.sharpSocket.Close();
         }
     }
     public class Server
@@ -130,16 +124,24 @@ namespace SharpSockets
         private void Listen()
         {
             this.sharpSocket = this.sharpSocket.Accept();
-            if(this.sharpSocket.Connected)
+            while((true))
             {
-                while((true))
+                if(this.sharpSocket.Connected)
                 {
-                    this.dataS = null;
-                    int bytesRecS = this.sharpSocket.Receive(this.data);
-                    if(bytesRecS>0)
+                    try
                     {
-                        this.dataS = Encoding.ASCII.GetString(this.data,0, bytesRecS);
-                        OnReceived(EventArgs.Empty);
+                        this.dataS = null;
+                        int bytesRecS = this.sharpSocket.Receive(this.data);
+                        if(bytesRecS>0)
+                        {
+                            this.dataS = Encoding.ASCII.GetString(this.data,0, bytesRecS);
+                            OnReceived(EventArgs.Empty);
+                        }
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Client ukončil spojení");
+                        break;
                     }
                 }
             }   
@@ -153,7 +155,7 @@ namespace SharpSockets
         {
             if(this.receiveT.IsAlive)
             {
-                this.receiveT.Abort();
+                this.receiveT.Interrupt();
             }
             this.sharpSocket.Shutdown(SocketShutdown.Receive);
             this.sharpSocket.Close();
