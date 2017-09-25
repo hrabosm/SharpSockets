@@ -6,8 +6,10 @@ using System.Text;
 
 namespace SharpSockets
 {
+    public delegate void OnDataReceivedEventHandler(object sender, EventArgs e);
     public class Client
     {
+        public event OnDataReceivedEventHandler OnDataReceived;
         public Socket sharpSocket;
         private IPEndPoint endIP;
         private Thread receiveT;
@@ -72,10 +74,10 @@ namespace SharpSockets
                 {
                     this.dataS = null;
                     int bytesRecC = this.sharpSocket.Receive(this.data);
-                    if(bytesRecC>1)
+                    if(bytesRecC>0)
                     {
                         this.dataS = Encoding.ASCII.GetString(this.data,0, bytesRecC);
-                        Console.WriteLine(this.dataS+"D");
+                        OnReceived(EventArgs.Empty);
                     }
                 }
             }
@@ -84,9 +86,15 @@ namespace SharpSockets
                 Console.WriteLine("Wut");
             }   
         }
+        protected virtual void OnReceived(EventArgs e)
+        {
+            if(OnDataReceived != null)
+                OnDataReceived(this, e);
+        }
     }
     public class Server
     {
+        public event OnDataReceivedEventHandler OnDataReceived;
         public Socket sharpSocket;
         private IPEndPoint endIP;
         private Thread receiveT;
@@ -128,13 +136,18 @@ namespace SharpSockets
                 {
                     this.dataS = null;
                     int bytesRecS = this.sharpSocket.Receive(this.data);
-                    if(bytesRecS>1)
+                    if(bytesRecS>0)
                     {
                         this.dataS = Encoding.ASCII.GetString(this.data,0, bytesRecS);
-                        Console.WriteLine(this.dataS);
+                        OnReceived(EventArgs.Empty);
                     }
                 }
             }   
+        }
+        protected virtual void OnReceived(EventArgs e)
+        {
+            if(OnDataReceived != null)
+                OnDataReceived(this, e);
         }
         public void Stop()
         {
