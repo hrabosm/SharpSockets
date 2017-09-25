@@ -37,7 +37,6 @@ namespace SharpSockets
         private void Connect()
         {
             int i = 1;
-            //Console.WriteLine("SS:Connecting! IP: "+ this.endIP.Address.ToString() + " and: "+ this.endIP.Port.ToString());
             start:
             try
             {
@@ -78,7 +77,6 @@ namespace SharpSockets
                         this.dataS = Encoding.ASCII.GetString(this.data,0, bytesRecC);
                         Console.WriteLine(this.dataS+"D");
                     }
-                    //System.Threading.Thread.Sleep(1000);
                 }
             }
             else
@@ -108,18 +106,15 @@ namespace SharpSockets
         public void Start(IPAddress localIp, int port, int backlog = 1)
         {
             this.endIP = new IPEndPoint(localIp,port);
-            //catch(Exception e){Console.WriteLine("Chyby blbečku!: " + e);}
             OpenListener(backlog);
         }
         public void Start(string localIp, int port, int backlog = 1)
         {
             this.endIP = new IPEndPoint(IPAddress.Parse(localIp),port);
-            //catch(Exception e){Console.WriteLine("Chyby blbečku!: " + e);}
             OpenListener(backlog);
         }
         private void OpenListener(int backlog)
         {
-            //Console.WriteLine("SS:Opening listener! IP: "+ this.endIP.Address.ToString() + " and: "+ this.endIP.Port.ToString());
             this.sharpSocket.Bind(this.endIP);
             this.sharpSocket.Listen(backlog);
             this.receiveT.Start();
@@ -138,7 +133,6 @@ namespace SharpSockets
                         this.dataS = Encoding.ASCII.GetString(this.data,0, bytesRecS);
                         Console.WriteLine(this.dataS);
                     }
-                    //System.Threading.Thread.Sleep(1000);
                 }
             }   
         }
