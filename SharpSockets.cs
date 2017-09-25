@@ -14,7 +14,7 @@ namespace SharpSockets
         private IPEndPoint endIP;
         private Thread receiveT;
         private byte[] data = new byte[2048];
-        public string dataS;
+        public string dataS { get; private set; }
         private byte[] dataTs;
         public Client(AddressFamily addressFamily = AddressFamily.InterNetwork, SocketType socketType = SocketType.Stream, ProtocolType protocolType = ProtocolType.Tcp)
         {
@@ -99,7 +99,7 @@ namespace SharpSockets
         private IPEndPoint endIP;
         private Thread receiveT;
         private byte[] data = new byte[2048];
-        public string dataS;
+        public string dataS { get; private set; }
         private byte[] dataTs;
         public Server(AddressFamily addressFamily = AddressFamily.InterNetwork, SocketType socketType = SocketType.Stream, ProtocolType protocolType = ProtocolType.Tcp)
         {
