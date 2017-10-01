@@ -1,8 +1,0 @@
-C:\Users\hrabo\Desktop\SharpSockets\bin\Debug\netcoreapp2.0\SharpSockets.deps.json
-C:\Users\hrabo\Desktop\SharpSockets\bin\Debug\netcoreapp2.0\SharpSockets.dll
-C:\Users\hrabo\Desktop\SharpSockets\bin\Debug\netcoreapp2.0\SharpSockets.pdb
-C:\Users\hrabo\Desktop\SharpSockets\obj\Debug\netcoreapp2.0\SharpSockets.csproj.CoreCompileInputs.cache
-C:\Users\hrabo\Desktop\SharpSockets\obj\Debug\netcoreapp2.0\SharpSockets.AssemblyInfoInputs.cache
-C:\Users\hrabo\Desktop\SharpSockets\obj\Debug\netcoreapp2.0\SharpSockets.AssemblyInfo.cs
-C:\Users\hrabo\Desktop\SharpSockets\obj\Debug\netcoreapp2.0\SharpSockets.dll
-C:\Users\hrabo\Desktop\SharpSockets\obj\Debug\netcoreapp2.0\SharpSockets.pdb
