@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -88,17 +89,18 @@ namespace SharpSockets
     }
     public class Server
     {
+        private List<EndPoint> clients = new List<EndPoint>();
         public event OnDataReceivedEventHandler OnDataReceived;
         public Socket sharpSocket;
         private IPEndPoint endIP;
-        private Thread receiveT;
+        //private Thread receiveT;
         private byte[] data = new byte[2048];
         public string dataS { get; private set; }
-        private byte[] dataTs;
+        private int id = 0;
         public Server(AddressFamily addressFamily = AddressFamily.InterNetwork, SocketType socketType = SocketType.Stream, ProtocolType protocolType = ProtocolType.Tcp)
         {
             this.sharpSocket = new Socket(addressFamily,socketType,protocolType);
-            this.receiveT = new Thread(this.Listen);
+            //this.receiveT = new Thread(this.Listen);
         }
         public void Start(IPEndPoint endPoint, int backlog = 1)
         {
@@ -117,13 +119,21 @@ namespace SharpSockets
         }
         private void OpenListener(int backlog)
         {
-            this.sharpSocket.Bind(this.endIP);
-            this.sharpSocket.Listen(backlog);
-            this.receiveT.Start();
+            while(true)
+            {
+                this.sharpSocket.Bind(this.endIP);
+                this.sharpSocket.Listen(backlog);
+                this.sharpSocket.Accept();
+                Thread t = new Thread(Listen);
+                t.Start();
+                clients[this.id] = this.sharpSocket.RemoteEndPoint;
+                this.id++;
+            }
         }
         private void Listen()
         {
-            this.sharpSocket = this.sharpSocket.Accept();
+            while(!this.sharpSocket.Connected){}
+            
             while((true))
             {
                 if(this.sharpSocket.Connected)
@@ -151,6 +161,7 @@ namespace SharpSockets
             if(OnDataReceived != null)
                 OnDataReceived(this, e);
         }
+        /*
         public void Stop()
         {
             if(this.receiveT.IsAlive)
@@ -160,15 +171,19 @@ namespace SharpSockets
             this.sharpSocket.Shutdown(SocketShutdown.Receive);
             this.sharpSocket.Close();
         }
-        public void Send(string stringData)
+        */
+        public void Send(string stringData,int id)
         {
             System.Threading.Thread.Sleep(100);
-            while(!this.sharpSocket.Connected)
+            byte[] dataTs = System.Text.Encoding.ASCII.GetBytes(stringData);
+            try
             {
-
+                this.sharpSocket.SendTo(dataTs,clients[id]);
             }
-            this.dataTs = System.Text.Encoding.ASCII.GetBytes(stringData);
-            this.sharpSocket.Send(this.dataTs);
+            catch
+            {
+                Console.WriteLine("User {0} is not connected!",id);
+            }
         }
     }
 }
