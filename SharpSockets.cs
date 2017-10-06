@@ -124,16 +124,14 @@ namespace SharpSockets
                 this.sharpSocket.Bind(this.endIP);
                 this.sharpSocket.Listen(backlog);
                 this.sharpSocket.Accept();
-                Thread t = new Thread(Listen);
+                Thread t = new Thread(() => Listen(this.id));
                 t.Start();
                 clients[this.id] = this.sharpSocket.RemoteEndPoint;
                 this.id++;
             }
         }
-        private void Listen()
+        private void Listen(int id)
         {
-            while(!this.sharpSocket.Connected){}
-            
             while((true))
             {
                 if(this.sharpSocket.Connected)
@@ -144,7 +142,7 @@ namespace SharpSockets
                         int bytesRecS = this.sharpSocket.Receive(this.data);
                         if(bytesRecS>0)
                         {
-                            this.dataS = Encoding.ASCII.GetString(this.data,0, bytesRecS);
+                            this.dataS = Encoding.ASCII.GetString(this.data,0, bytesRecS) + "@" + clients[id].ToString();
                             OnReceived(EventArgs.Empty);
                         }
                     }
