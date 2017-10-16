@@ -19,37 +19,44 @@ namespace SharpSockets
         private byte[] dataTs;
         public Client(AddressFamily addressFamily = AddressFamily.InterNetwork, SocketType socketType = SocketType.Stream, ProtocolType protocolType = ProtocolType.Tcp)
         {
+            //Constructor for Client object
             this.sharpSocket = new Socket(addressFamily,socketType,protocolType);
             this.receiveT = new Thread(Listen);
         }
         public void Start(IPEndPoint endPoint)
         {
+            //Connects to endPoint type
             this.endIP = endPoint;
             Connect();
         }
         public void Start(IPAddress ip, int port)
         {
+            //Connects to IP IPAddress type and port
             this.endIP = new IPEndPoint(ip,port);
             Connect();
         }
         public void Start(string ip, int port)
         {
+            //Connects to IP string type and port
             this.endIP = new IPEndPoint(IPAddress.Parse(ip),port);
             Connect();
         }
         private void Connect()
         {
+            //Connection to endIP and start of listening thread
             this.sharpSocket.Connect(this.endIP);
             this.receiveT.Start();
         }
         public void Send(string stringData)
         {
+            //Sending of data in form of string
             System.Threading.Thread.Sleep(100);
             this.dataTs = System.Text.Encoding.ASCII.GetBytes(stringData);
             this.sharpSocket.Send(this.dataTs);
         }
         private void Listen()
         {
+            //Listening thread
             while((true))
             {
                 if(this.sharpSocket.Connected)
@@ -74,11 +81,13 @@ namespace SharpSockets
         }
         protected virtual void OnReceived(EventArgs e)
         {
+            //event OnDataReceived
             if(OnDataReceived != null)
                 OnDataReceived(this, e);
         }
         public void Stop()
         {
+            //Stops listening thread if running
             if(this.receiveT.IsAlive)
             {
                 this.receiveT.Interrupt();
@@ -99,26 +108,31 @@ namespace SharpSockets
         private int id = 0;
         public Server(AddressFamily addressFamily = AddressFamily.InterNetwork, SocketType socketType = SocketType.Stream, ProtocolType protocolType = ProtocolType.Tcp)
         {
+            //Constructor of Server object
             this.sharpSocket = new Socket(addressFamily,socketType,protocolType);
             //this.receiveT = new Thread(this.Listen);
         }
         public void Start(IPEndPoint endPoint, int backlog = 1)
         {
+            //Binding to IP IPAdress type and port (Optional backlog)
             this.endIP = endPoint;
             OpenListener(backlog);
         }
         public void Start(IPAddress localIp, int port, int backlog = 1)
         {
+            //Binding to IP IPAdress type and port (Optional backlog)
             this.endIP = new IPEndPoint(localIp,port);
             OpenListener(backlog);
         }
         public void Start(string localIp, int port, int backlog = 1)
         {
+            //Binding to IP string type and port (Optional backlog)
             this.endIP = new IPEndPoint(IPAddress.Parse(localIp),port);
             OpenListener(backlog);
         }
         private void OpenListener(int backlog)
         {
+            //Binds to endIP and starts listening thread when connection is established (threads are assigned clientID)
             while(true)
             {
                 this.sharpSocket.Bind(this.endIP);
@@ -132,6 +146,7 @@ namespace SharpSockets
         }
         private void Listen(int id)
         {
+            //Listening thread for target client (using client ID)
             while((true))
             {
                 if(this.sharpSocket.Connected)
@@ -156,6 +171,7 @@ namespace SharpSockets
         }
         protected virtual void OnReceived(EventArgs e)
         {
+            //event OnDataReceived
             if(OnDataReceived != null)
                 OnDataReceived(this, e);
         }
@@ -172,6 +188,7 @@ namespace SharpSockets
         */
         public void Send(string stringData,int id)
         {
+            //Sends data in form of string to target client (using client id)
             System.Threading.Thread.Sleep(100);
             byte[] dataTs = System.Text.Encoding.ASCII.GetBytes(stringData);
             try
